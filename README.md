@@ -4,6 +4,8 @@
 - adding posts
 - login
 - signup
+- validation
+- database migration
 - auditing
 - caching
 - logging
