@@ -1,6 +1,6 @@
 package com.compedia.entities;
 
-import com.compedia.configs.enums.RoleName;
+import com.compedia.enums.RoleName;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "roles")
@@ -25,4 +26,7 @@ public class RoleEntity {
     private RoleName roleName;
     @CreatedDate
     private LocalDateTime createdAt;
+
+    @ManyToMany(mappedBy = "roles")
+    private Set<UserEntity> users;
 }

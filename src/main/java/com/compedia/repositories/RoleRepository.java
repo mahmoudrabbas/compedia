@@ -1,6 +1,6 @@
 package com.compedia.repositories;
 
-import com.compedia.configs.enums.RoleName;
+import com.compedia.enums.RoleName;
 import com.compedia.entities.RoleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

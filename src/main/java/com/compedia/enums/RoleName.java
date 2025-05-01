@@ -1,4 +1,4 @@
-package com.compedia.configs.enums;
+package com.compedia.enums;
 
 public enum RoleName {
     ROLE_USER,
