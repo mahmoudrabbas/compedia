@@ -1,5 +1,7 @@
 package com.compedia.services;
 
+import com.compedia.DTOs.UserRequestDTO;
+import com.compedia.entities.RoleEntity;
 import com.compedia.entities.UserEntity;
 import com.compedia.enums.RoleName;
 import com.compedia.exceptions.AlreadyExistsException;
@@ -17,6 +19,7 @@ import java.util.List;
 @Transactional
 public class UserService {
     private final UserRepository userRepository;
+    private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
 
     // get all users
@@ -30,7 +33,7 @@ public class UserService {
     }
 
     // add user
-    public UserEntity addUser(UserEntity entity){
+    public UserEntity addUser(UserRequestDTO entity){
 
         userRepository.findByEmail(entity.getEmail())
                 .ifPresent((err) -> {throw new AlreadyExistsException("Email Is Already In Use");});
@@ -38,8 +41,12 @@ public class UserService {
         userRepository.findByUsername(entity.getUsername())
                 .ifPresent((err) -> {throw new AlreadyExistsException("Username Is Already In Use");});
 
-        entity.setPassword(passwordEncoder.encode(entity.getPassword()));
-        return userRepository.save(entity);
+        UserEntity user = new UserEntity().mapToEntity(entity);
+
+        RoleEntity userRole = roleService.getRoleByName(RoleName.ROLE_USER);
+        user.getRoles().add(userRole);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
     }
 
     // update user

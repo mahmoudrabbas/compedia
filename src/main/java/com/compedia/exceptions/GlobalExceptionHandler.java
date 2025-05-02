@@ -14,7 +14,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException ex){
-        ErrorResponse response = new ErrorResponse(HttpStatus.NOT_FOUND.toString(), ex.getMessage(), LocalDateTime.now());
+        ErrorResponse response = new ErrorResponse();
+        response.setTimestamp(LocalDateTime.now());
+        response.setErrorCode(HttpStatus.NOT_FOUND.toString());
+        response.setErrorMessage(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleAlreadyExistsException(AlreadyExistsException ex){
+        ErrorResponse response = new ErrorResponse();
+        response.setTimestamp(LocalDateTime.now());
+        response.setErrorCode(HttpStatus.BAD_REQUEST.toString());
+        response.setErrorMessage(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 }

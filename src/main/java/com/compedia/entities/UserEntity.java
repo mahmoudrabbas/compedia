@@ -1,14 +1,14 @@
 package com.compedia.entities;
 
+import com.compedia.DTOs.UserRequestDTO;
 import com.compedia.enums.Gender;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,6 +24,8 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@EntityListeners(AuditingEntityListener.class)
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +54,7 @@ public class UserEntity {
     private LocalDateTime lastModifiedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<PostEntity> posts=new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -60,5 +63,18 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<RoleEntity> roles= new HashSet<>();
+    @JsonManagedReference
+    private Set<RoleEntity> roles = new HashSet<>();
+
+    public UserEntity mapToEntity(UserRequestDTO dto){
+        return builder()
+                .firstName(dto.getFirstName())
+                .lastName(dto.getLastName())
+                .username(dto.getUsername())
+                .email(dto.getEmail())
+                .password(dto.getPassword())
+                .gender(dto.getGender().equalsIgnoreCase("male")?Gender.MALE:Gender.FEMALE)
+                .roles(new HashSet<>())
+                .build();
+    }
 }
