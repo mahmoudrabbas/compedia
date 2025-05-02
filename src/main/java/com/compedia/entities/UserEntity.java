@@ -68,6 +68,7 @@ public class UserEntity {
 
     public UserEntity mapToEntity(UserRequestDTO dto){
         return builder()
+                .id(dto.getId())
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
                 .username(dto.getUsername())

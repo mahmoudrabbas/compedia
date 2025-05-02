@@ -1,8 +1,10 @@
 package com.compedia.services;
 
 import com.compedia.DTOs.UserRequestDTO;
+import com.compedia.DTOs.UserResponseDTO;
 import com.compedia.entities.RoleEntity;
 import com.compedia.entities.UserEntity;
+import com.compedia.enums.Gender;
 import com.compedia.enums.RoleName;
 import com.compedia.exceptions.AlreadyExistsException;
 import com.compedia.exceptions.NotFoundException;
@@ -33,7 +35,7 @@ public class UserService {
     }
 
     // add user
-    public UserEntity addUser(UserRequestDTO entity){
+    public UserResponseDTO addUser(UserRequestDTO entity){
 
         userRepository.findByEmail(entity.getEmail())
                 .ifPresent((err) -> {throw new AlreadyExistsException("Email Is Already In Use");});
@@ -46,34 +48,37 @@ public class UserService {
         RoleEntity userRole = roleService.getRoleByName(RoleName.ROLE_USER);
         user.getRoles().add(userRole);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        UserEntity userEntity = userRepository.save(user);
+        return new UserResponseDTO().mapToDto(userEntity);
     }
 
     // update user
-    public UserEntity updateUser(UserEntity entity){
+    public UserResponseDTO updateUser(UserRequestDTO entity){
+        UserEntity user = userRepository.findById(entity.getId())
+                .orElseThrow(() -> new NotFoundException("User not found with id: "+entity.getId()));
+
 
         userRepository.findByEmail(entity.getEmail())
+                .filter(existed -> !existed.getId().equals(entity.getId()))
                 .ifPresent((err) -> {throw new AlreadyExistsException("Email Is Already In Use");});
 
         userRepository.findByUsername(entity.getUsername())
                 .filter(existed -> !existed.getId().equals(entity.getId()))
                 .ifPresent((err) -> {throw new AlreadyExistsException("Username Is Already In Use");});
 
-        UserEntity user = userRepository.findById(entity.getId())
-                .filter(existed -> !existed.getId().equals(entity.getId()))
-                .orElseThrow(() -> new NotFoundException("User not found with id: "+entity.getId()));
-
         user.setFirstName(entity.getFirstName());
         user.setLastName(entity.getLastName());
         user.setEmail(entity.getEmail());
         user.setUsername(entity.getUsername());
-        user.setGender(entity.getGender());
+        user.setGender(entity.getGender().equalsIgnoreCase("Male")? Gender.MALE:Gender.FEMALE);
 
         if(!entity.getPassword().isBlank()){
             user.setPassword(passwordEncoder.encode(entity.getPassword()));
         }
 
-        return userRepository.save(user);
+        UserEntity userEntity = userRepository.save(user);
+
+        return new UserResponseDTO().mapToDto(userEntity);
     }
 
 

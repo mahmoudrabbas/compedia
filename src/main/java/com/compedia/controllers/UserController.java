@@ -30,7 +30,7 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateUser(@RequestBody @Valid UserEntity entity){
+    public ResponseEntity<?> updateUser(@RequestBody @Valid UserRequestDTO entity){
         return ResponseEntity.ok().body(userService.updateUser(entity));
     }
 

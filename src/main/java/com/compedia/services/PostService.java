@@ -1,5 +1,6 @@
 package com.compedia.services;
 
+import com.compedia.DTOs.PostDTO;
 import com.compedia.entities.PostEntity;
 import com.compedia.exceptions.NotFoundException;
 import com.compedia.repositories.PostRepository;
@@ -26,17 +27,18 @@ public class PostService {
     }
 
     // add post
-    public PostEntity addPost(PostEntity post){
+    public PostEntity addPost(PostDTO postDTO){
+        PostEntity post = new PostEntity().mapToEntity(postDTO);
         return postRepository.save(post);
     }
 
     // update post
-    public PostEntity updatePost(PostEntity post){
-        PostEntity returnedPost = postRepository.findById(post.getId())
-                .orElseThrow(() -> new NotFoundException("Post Not Found with id: "+post.getId()));
+    public PostEntity updatePost(PostDTO postDTO){
+        PostEntity returnedPost = postRepository.findById(postDTO.getId())
+                .orElseThrow(() -> new NotFoundException("Post Not Found with id: "+postDTO.getId()));
 
-        returnedPost.setPostContent(post.getPostContent());
-        returnedPost.setUser(post.getUser());
+        returnedPost.setPostContent(postDTO.getPostContent());
+        returnedPost.setUser(postDTO.getUser());
 
         return postRepository.save(returnedPost);
     }

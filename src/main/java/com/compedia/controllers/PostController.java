@@ -1,5 +1,6 @@
 package com.compedia.controllers;
 
+import com.compedia.DTOs.PostDTO;
 import com.compedia.entities.PostEntity;
 import com.compedia.repositories.PostRepository;
 import com.compedia.services.PostService;
@@ -23,13 +24,13 @@ public class PostController {
         return ResponseEntity.ok().body(postService.getPostById(id));
     }
 
-    @GetMapping
-    public ResponseEntity<?> add(PostEntity post){
+    @PostMapping
+    public ResponseEntity<?> add(PostDTO post){
         return ResponseEntity.ok().body(postService.addPost(post));
     }
 
     @PutMapping
-    public ResponseEntity<?> update(PostEntity post){
+    public ResponseEntity<?> update(PostDTO post){
         return ResponseEntity.ok().body(postService.updatePost(post));
     }
 

@@ -1,11 +1,9 @@
 package com.compedia.entities;
 
+import com.compedia.DTOs.PostDTO;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -20,6 +18,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 public class PostEntity {
     @Id
@@ -41,4 +40,12 @@ public class PostEntity {
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private UserEntity user;
+
+    public PostEntity mapToEntity(PostDTO dto){
+        return builder()
+                .id(dto.getId())
+                .postContent(dto.getPostContent())
+                .user(dto.getUser())
+                .build();
+    }
 }
