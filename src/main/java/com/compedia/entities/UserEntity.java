@@ -1,6 +1,6 @@
 package com.compedia.entities;
 
-import com.compedia.DTOs.UserRequestDTO;
+import com.compedia.DTOs.UserRequest;
 import com.compedia.enums.Gender;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -66,7 +66,7 @@ public class UserEntity {
     @JsonManagedReference
     private Set<RoleEntity> roles = new HashSet<>();
 
-    public UserEntity mapToEntity(UserRequestDTO dto){
+    public UserEntity mapToEntity(UserRequest dto){
         return builder()
                 .id(dto.getId())
                 .firstName(dto.getFirstName())

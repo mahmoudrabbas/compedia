@@ -1,8 +1,6 @@
 package com.compedia.controllers;
 
-import com.compedia.DTOs.PostDTO;
-import com.compedia.entities.PostEntity;
-import com.compedia.repositories.PostRepository;
+import com.compedia.DTOs.PostRequest;
 import com.compedia.services.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +23,12 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<?> add(PostDTO post){
+    public ResponseEntity<?> add(PostRequest post){
         return ResponseEntity.ok().body(postService.addPost(post));
     }
 
     @PutMapping
-    public ResponseEntity<?> update(PostDTO post){
+    public ResponseEntity<?> update(PostRequest post){
         return ResponseEntity.ok().body(postService.updatePost(post));
     }
 

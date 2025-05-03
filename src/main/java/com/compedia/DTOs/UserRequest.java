@@ -1,22 +1,17 @@
 package com.compedia.DTOs;
 
-import com.compedia.enums.Gender;
 import com.compedia.utils.SanitizingDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
-import java.util.List;
-import java.util.Set;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserRequestDTO {
+public class UserRequest {
 
     private Long id;
     @NotNull(message = "First Name Is Required")

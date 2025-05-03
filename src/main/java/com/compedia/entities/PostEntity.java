@@ -1,6 +1,6 @@
 package com.compedia.entities;
 
-import com.compedia.DTOs.PostDTO;
+import com.compedia.DTOs.PostRequest;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,7 +41,7 @@ public class PostEntity {
     @JsonBackReference
     private UserEntity user;
 
-    public PostEntity mapToEntity(PostDTO dto){
+    public PostEntity mapToEntity(PostRequest dto){
         return builder()
                 .id(dto.getId())
                 .postContent(dto.getPostContent())

@@ -1,7 +1,9 @@
 package com.compedia.services;
 
-import com.compedia.DTOs.UserRequestDTO;
-import com.compedia.DTOs.UserResponseDTO;
+import com.compedia.DTOs.LoginRequest;
+import com.compedia.DTOs.LoginResponse;
+import com.compedia.DTOs.UserRequest;
+import com.compedia.DTOs.UserResponse;
 import com.compedia.entities.RoleEntity;
 import com.compedia.entities.UserEntity;
 import com.compedia.enums.Gender;
@@ -9,8 +11,15 @@ import com.compedia.enums.RoleName;
 import com.compedia.exceptions.AlreadyExistsException;
 import com.compedia.exceptions.NotFoundException;
 import com.compedia.repositories.UserRepository;
+import com.compedia.security.JwtService;
+import com.compedia.security.UserDetailsImpl;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +32,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     // get all users
     public List<UserEntity> getAllUsers(){
@@ -35,7 +47,7 @@ public class UserService {
     }
 
     // add user
-    public UserResponseDTO addUser(UserRequestDTO entity){
+    public LoginResponse signUp(UserRequest entity){
 
         userRepository.findByEmail(entity.getEmail())
                 .ifPresent((err) -> {throw new AlreadyExistsException("Email Is Already In Use");});
@@ -49,11 +61,15 @@ public class UserService {
         user.getRoles().add(userRole);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         UserEntity userEntity = userRepository.save(user);
-        return new UserResponseDTO().mapToDto(userEntity);
+
+        String refreshToken = refreshTokenService.createRefreshToken(entity.getId()).getToken();
+        String accessToken = jwtService.generateAccessToken(new UserDetailsImpl(userEntity));
+
+        return new LoginResponse(accessToken, refreshToken);
     }
 
     // update user
-    public UserResponseDTO updateUser(UserRequestDTO entity){
+    public UserResponse updateUser(UserRequest entity){
         UserEntity user = userRepository.findById(entity.getId())
                 .orElseThrow(() -> new NotFoundException("User not found with id: "+entity.getId()));
 
@@ -78,7 +94,7 @@ public class UserService {
 
         UserEntity userEntity = userRepository.save(user);
 
-        return new UserResponseDTO().mapToDto(userEntity);
+        return new UserResponse().mapToDto(userEntity);
     }
 
 
@@ -94,4 +110,19 @@ public class UserService {
     public List<UserEntity> getUsersByRoleName(RoleName roleName){
         return userRepository.findUsersByRoleName(roleName);
     }
+
+    public LoginResponse signIn(@Valid LoginRequest credentials){
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword()));
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        UserEntity user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new NotFoundException("User Not Found"));
+
+        String accessToken = refreshTokenService.createRefreshToken(user.getId()).getToken();
+        String refreshToken = jwtService.generateRefreshToken(userDetails);
+
+        return new LoginResponse(accessToken, refreshToken);
+    }
+
 }

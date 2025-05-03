@@ -1,7 +1,6 @@
 package com.compedia.DTOs;
 
 import com.compedia.entities.UserEntity;
-import com.compedia.enums.Gender;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,7 +11,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserResponseDTO {
+public class UserResponse {
     private Long id;
     private String firstName;
     private String lastName;
@@ -24,7 +23,7 @@ public class UserResponseDTO {
     private Set<String> roles;
 
 
-    public UserResponseDTO mapToDto(UserEntity user){
+    public UserResponse mapToDto(UserEntity user){
         return builder()
                 .id(user.getId())
                 .firstName(user.getFirstName())

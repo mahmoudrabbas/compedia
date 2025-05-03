@@ -1,11 +1,10 @@
 package com.compedia.services;
 
-import com.compedia.DTOs.PostDTO;
+import com.compedia.DTOs.PostRequest;
 import com.compedia.entities.PostEntity;
 import com.compedia.exceptions.NotFoundException;
 import com.compedia.repositories.PostRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,18 +26,18 @@ public class PostService {
     }
 
     // add post
-    public PostEntity addPost(PostDTO postDTO){
-        PostEntity post = new PostEntity().mapToEntity(postDTO);
+    public PostEntity addPost(PostRequest postRequest){
+        PostEntity post = new PostEntity().mapToEntity(postRequest);
         return postRepository.save(post);
     }
 
     // update post
-    public PostEntity updatePost(PostDTO postDTO){
-        PostEntity returnedPost = postRepository.findById(postDTO.getId())
-                .orElseThrow(() -> new NotFoundException("Post Not Found with id: "+postDTO.getId()));
+    public PostEntity updatePost(PostRequest postRequest){
+        PostEntity returnedPost = postRepository.findById(postRequest.getId())
+                .orElseThrow(() -> new NotFoundException("Post Not Found with id: "+ postRequest.getId()));
 
-        returnedPost.setPostContent(postDTO.getPostContent());
-        returnedPost.setUser(postDTO.getUser());
+        returnedPost.setPostContent(postRequest.getPostContent());
+        returnedPost.setUser(postRequest.getUser());
 
         return postRepository.save(returnedPost);
     }

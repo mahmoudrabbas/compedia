@@ -1,7 +1,6 @@
 package com.compedia.controllers;
 
-import com.compedia.DTOs.UserRequestDTO;
-import com.compedia.entities.UserEntity;
+import com.compedia.DTOs.UserRequest;
 import com.compedia.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +24,12 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addUser(@RequestBody @Valid UserRequestDTO entity){
-        return ResponseEntity.ok().body(userService.addUser(entity));
+    public ResponseEntity<?> addUser(@RequestBody @Valid UserRequest entity){
+        return ResponseEntity.ok().body(userService.signUp(entity));
     }
 
     @PutMapping
-    public ResponseEntity<?> updateUser(@RequestBody @Valid UserRequestDTO entity){
+    public ResponseEntity<?> updateUser(@RequestBody @Valid UserRequest entity){
         return ResponseEntity.ok().body(userService.updateUser(entity));
     }
 
