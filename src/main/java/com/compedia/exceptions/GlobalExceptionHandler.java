@@ -29,4 +29,13 @@ public class GlobalExceptionHandler {
         response.setErrorMessage(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
+
+    @ExceptionHandler(NotValidTokenException.class)
+    public ResponseEntity<ErrorResponse> handleNotValidTokenException(NotValidTokenException ex){
+        ErrorResponse response = new ErrorResponse();
+        response.setTimestamp(LocalDateTime.now());
+        response.setErrorCode(HttpStatus.UNAUTHORIZED.toString());
+        response.setErrorMessage(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
 }

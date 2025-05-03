@@ -1,5 +1,6 @@
 package com.compedia.controllers;
 
+import com.compedia.services.PostService;
 import com.compedia.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,11 +12,11 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class HomeController {
-    private final UserService userService;
+    private final PostService postService;
 
     @GetMapping
     public ResponseEntity<?> home(){
-        return ResponseEntity.ok().body(userService.getAllUsers());
+        return ResponseEntity.ok().body(postService.getAllPosts());
     }
 
 }

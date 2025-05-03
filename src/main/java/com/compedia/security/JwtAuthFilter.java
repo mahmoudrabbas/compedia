@@ -1,5 +1,6 @@
 package com.compedia.security;
 
+import com.compedia.exceptions.NotValidTokenException;
 import com.compedia.services.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,7 +20,6 @@ import java.io.IOException;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
-    private final UserService userService;
     private final UserDetailsServiceImpl userDetailsService;
     @Override
     protected void doFilterInternal(
@@ -27,21 +27,31 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
-        if(authHeader!=null && authHeader.startsWith("Bearer")){
-            String token = authHeader.substring(7);
-            String username = jwtService.extractUsername(token);
-            if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null){
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        try {
+            String authHeader = request.getHeader("Authorization");
+            if(authHeader!=null && authHeader.startsWith("Bearer")){
+                String token = authHeader.substring(7);
+                String username = jwtService.extractUsername(token);
+                if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null){
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    if(jwtService.isTokenValid(token, userDetails)){
+                        UsernamePasswordAuthenticationToken authToken =
+                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                    }
 
+
+                }
             }
+        }catch (Exception ex){
+            throw new NotValidTokenException("Access Token Is Not Valid");
         }
 
         filterChain.doFilter(request, response);
     }
 }
+
+
+

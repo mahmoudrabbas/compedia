@@ -23,10 +23,10 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUserById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<?> addUser(@RequestBody @Valid UserRequest entity){
-        return ResponseEntity.ok().body(userService.signUp(entity));
-    }
+//    @PostMapping
+//    public ResponseEntity<?> addUser(@RequestBody @Valid UserRequest entity){
+//        return ResponseEntity.ok().body(userService.signUp(entity));
+//    }
 
     @PutMapping
     public ResponseEntity<?> updateUser(@RequestBody @Valid UserRequest entity){

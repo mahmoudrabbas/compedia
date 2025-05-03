@@ -8,12 +8,8 @@
 - ✅ access token
 - ✅ refresh token
 - ✅ validation
-- database migration
 - ✅ auditing
-- caching with redis
-- logging
 - ✅ sanitizing
-- unit testing
 
 
 ### API
@@ -29,6 +25,7 @@
   - ✅ http://localhost:8080/api/auth/register (POST)
   - ✅ http://localhost:8080/api/auth/login (POST)
   - ✅ http://localhost:8080/api/auth/logout (POST)
+  - ✅ http://localhost:8080/api/auth/refresh (POST)
 - posts api
   - ✅ http://localhost:8080/api/v1/posts (GET)
   - ✅ http://localhost:8080/api/v1/posts/{id} (GET)

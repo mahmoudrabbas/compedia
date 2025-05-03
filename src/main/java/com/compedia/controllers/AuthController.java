@@ -6,10 +6,7 @@ import com.compedia.security.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -19,23 +16,23 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<LoginResponse> register(@RequestBody @Valid UserRequest request){
-        return ResponseEntity.ok().body(authService.register(request));
+        return ResponseEntity.ok().body(authService.signUp(request));
     }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request){
-        return ResponseEntity.ok().body(authService.login(request));
+        return ResponseEntity.ok().body(authService.signIn(request));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(@RequestBody @Valid RefreshToken request){
-        return ResponseEntity.ok().body(authService.refreshToken(request));
+    public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String refreshToken){
+        return ResponseEntity.ok().body(authService.refreshAccessToken(refreshToken));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestBody @Valid RefreshToken request){
-        return ResponseEntity.ok().body(authService.logout(request));
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String refreshToken){
+        System.out.println(refreshToken);
+        return ResponseEntity.ok().body(authService.logout(refreshToken));
     }
-
 
 }

@@ -1,31 +1,40 @@
 package com.compedia.security;
 
+import com.compedia.entities.RefreshToken;
+import com.compedia.services.RefreshTokenService;
+import com.compedia.services.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.Date;
 import java.util.function.Function;
 
 @Service
 public class JwtService {
-    public final String secretKey;
+    private final String secretKey;
     private final long accessTokenValidity;
     private final long refreshTokenValidity;
+    private final UserService userService;
+    private final RefreshTokenService refreshTokenService;
 
     public JwtService(
             @Value("${spring.security.jwt.secret-key}") String secretKey,
             @Value("${spring.security.jwt.access-token-validity}") long accessTokenValidity,
-            @Value("${spring.security.jwt.refresh-token-validity}") long refreshTokenValidity
+            @Value("${spring.security.jwt.refresh-token-validity}") long refreshTokenValidity,
+            UserService userService,
+            RefreshTokenService refreshTokenService
     ){
         this.secretKey = secretKey;
         this.accessTokenValidity = accessTokenValidity;
         this.refreshTokenValidity = refreshTokenValidity;
+        this.userService = userService;
+        this.refreshTokenService = refreshTokenService;
 
     }
 
@@ -72,7 +81,13 @@ public class JwtService {
     }
 
     public String generateRefreshToken(UserDetails userDetails){
-        return generateToken(userDetails, refreshTokenValidity);
+        RefreshToken refreshToken = new RefreshToken();
+        String token = generateToken(userDetails, refreshTokenValidity);
+        refreshToken.setExpiryDate(extractExpiration(token));
+        refreshToken.setToken(token);
+        refreshToken.setUser(userService.getByUsername(userDetails.getUsername()));
+        refreshTokenService.saveRefreshToken(refreshToken);
+        return token;
     }
 
 }
